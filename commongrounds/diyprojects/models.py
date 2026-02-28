@@ -9,6 +9,9 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def get_absolute_url(self):
+        return reverse('diyprojects:project_category', args=[str(self.id)])
+
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
