@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ project.title }}</h2>
+<h3>Category: {project.category}</h3>
+<h3>Description:</h3>
+<p>{project.description}</p>
+<h3>Materials:</h3>
+<p>{project.materials}</p>
+<h3>Steps:</h3>
+<p>{project.steps}</p>
+<h3>Created On: {project.created_on}</h3>
+<h3>Updated On: {project.updated_on}</h3>
+{% endblock %}
