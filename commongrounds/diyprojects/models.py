@@ -9,9 +9,6 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    def get_absolute_url(self):
-        return reverse('diyprojects:project_detail', args=[str(self.id)])
-
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
@@ -23,13 +20,17 @@ class Project(models.Model):
     category = models.ForeignKey(
         ProjectCategory,
         on_delete=models.SET_NULL,
-        related_name='category'
+        null=True,
+        related_name='projects',
     )
     description = models.TextField()
     materials = models.TextField()
     steps = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+
+    def get_absolute_url(self):
+        return reverse('diyprojects:project_detail', args=[str(self.id)])
 
     class Meta:
         verbose_name = 'project'
