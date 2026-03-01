@@ -20,4 +20,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('localevents/', include('localevents.urls', namespace='localevents')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
