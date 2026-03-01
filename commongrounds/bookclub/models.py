@@ -8,9 +8,6 @@ class Genre (models.Model):
     def __str__(self):
         return f"{self.name}"
     
-    def get_absolute_url(self):
-        return reverse('bookclub:book_detail', args=[str(self.id)])
-    
     class Meta:
         verbose_name = 'genre'
         verbose_name_plural = 'genres'
@@ -22,12 +19,19 @@ class Book (models.Model):
     genre = models.ForeignKey(
         Genre,
         on_delete=models.SET_NULL,
-        related_name='genre'
+        null=True,
+        related_name='books'
     )
     author = models.CharField()
     publication_year = models.IntegerField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title}"
+
+    def get_absolute_url(self):
+        return reverse('bookclub:book_detail', args=[str(self.id)])
     
     class Meta:
         verbose_name = 'book'
