@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href="/localevents/list">Home</a>
+<a href="/localevents/list">Back to Local Events List</a>
 <h1>Local Event Detail</h1>
-<p>{{ localevent.name }}</p>
-<p>{{ localevent.description }}</p>
+<h2>{{ localevent.title }}</h2>
+
+<p>Category: {{ localevent.category }}</p>
+<p>Description: {{ localevent.description }}</p>
+<p>Location: {{ localevent.location }}</p>
+<p>Start Time: {{ localevent.start_time }}</p>
+<p>End Time: {{ localevent.end_time }}</p>
+<p> Created on: {{ localevent.created_on }}</p>
+<p> Updated on: {{ localevent.updated_on }}</p>
+
 {% endblock %}
