@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="/localevents/list">Back to Local Events List</a>
+<h2>{{ event.title }}</h2>
+
+<h3>Category: {{ event.category }}</h3>
+<h3>Description:</h3>
+<p>{{ event.description }}</p>
+<br>
+<h3>Location:</h3> 
+<p>{{ event.location }}</p>
+<h4>Start Time: {{ event.start_time }}</h4>
+<h4>End Time: {{ event.end_time }}</h4>
+<br>
+<p><strong>Created on:</strong> {{ event.created_on }}</p>
+<p><strong>Updated on:</strong> {{ event.updated_on }}</p>
+
+{% endblock %}

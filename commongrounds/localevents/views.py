@@ -11,6 +11,7 @@ from .models import Event
 class LocalEventsListView(ListView):
     model = Event
     template_name = "localevents_list.html"
+    context_object_name = 'events'
 
 
 class LocalEventDetailView(LoginRequiredMixin, DetailView):
