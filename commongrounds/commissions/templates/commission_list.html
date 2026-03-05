@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Commission Requests</h2>
+
+<ul>
+    {% for commission in commissions %}
+        <li>
+            <a href="{% url 'commission_detail' commission.pk %}">
+                {{ commission.title }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
