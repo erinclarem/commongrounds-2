@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<a href="/localevents/list">Back to Local Events List</a>
-<h2>{{ event.title }}</h2>
-
-<h3>Category: {{ event.category }}</h3>
+<h2>{{ event }}</h2>
+<br>
+<h3>Category:</h3>
+<p>{{ event.category }}</p>
+<br>
 <h3>Description:</h3>
 <p>{{ event.description }}</p>
 <br>
