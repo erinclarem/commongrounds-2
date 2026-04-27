@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from accounts.models import Profile
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class ProjectCategory(models.Model):
@@ -26,6 +28,12 @@ class Project(models.Model):
         null=True,
         related_name='projects',
     )
+    creator = models.ForeignKey(
+        Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='projects',
+    )
     description = models.TextField()
     materials = models.TextField()
     steps = models.TextField()
@@ -42,3 +50,52 @@ class Project(models.Model):
         verbose_name = 'project'
         verbose_name_plural = 'projects'
         ordering = ['-created_on']
+
+
+class Favorite(models.Model):
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+    )
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='favorites',
+    )
+    date_favorited = models.DateTimeField()
+    STATUS_CHOICES = [
+        ('backlog', 'Backlog'),
+        ('todo', 'To-Do'),
+        ('done', 'Done'),
+    ]
+    project_status = models.CharField(
+        max_length=7,
+        choices=STATUS_CHOICES,
+        default='backlog',
+    )
+
+
+class ProjectReview(models.Model):
+    reviewer = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
+    comment = models.TextField()
+    image = models.ImageField(
+        upload_to='images/',
+        null=True,
+        blank=True
+    )
+
+
+class ProjectRating(models.Model):
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='ratings',
+    )
+    score = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)]
+        )
