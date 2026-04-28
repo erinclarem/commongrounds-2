@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>DIY Project List</h2>
+<ul>
+{% for project in project_list %}
+    <li><a href="{{ project.get_absolute_url }}">{{ project }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
