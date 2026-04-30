@@ -4,3 +4,4 @@ djangoenv/
 __pycache__/
 *.pyc
 media/
+.jpg
