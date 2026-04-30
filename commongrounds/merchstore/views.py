@@ -5,7 +5,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
-from .forms import TransactionForm
+from .forms import TransactionForm, ProductForm
 
 
 class ProductListView(ListView):
@@ -78,8 +78,13 @@ class ProductDetailView(DetailView):
 class ProductCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     model = Product
     template_name = 'product_create.html'
-    fields = '__all__'
     required_role = 'Market Seller'
+    form_class = ProductForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['initial'] = {'owner': self.request.user.profile}
+        return kwargs
 
     def form_valid(self, form):
         form.instance.owner = self.request.user.profile
