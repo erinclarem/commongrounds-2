@@ -13,7 +13,7 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         return super().get_queryset()
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['all_products'] = Product.objects.all()
@@ -29,7 +29,10 @@ class ProductDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['transaction_form'] = TransactionForm()
+
+        if 'transaction_form' not in context:
+            context['transaction_form'] = TransactionForm()
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -39,22 +42,29 @@ class ProductDetailView(DetailView):
         if not request.user.is_authenticated:
             return redirect('accounts:login')
 
+        if request.user.profile == self.object.owner:
+            transaction_form.add_error(
+                None, 'You cannot purchase your own product.'
+                )
+            return self.render_to_response(
+                self.get_context_data(transaction_form=transaction_form)
+            )
+
         if transaction_form.is_valid():
-            if request.user.profile == self.object.owner:
+            if transaction_form.cleaned_data['amount'] > self.object.stock:
                 transaction_form.add_error(
-                    None, 'You cannot purchase your own product.'
+                    'amount', 'Not enough stock available.'
                     )
+                return self.render_to_response(
+                    self.get_context_data(transaction_form=transaction_form)
+                )
             else:
-                if transaction_form.cleaned_data['amount'] > self.object.stock:
-                    transaction_form.add_error(
-                        'amount', 'Not enough stock available.'
-                        )
-                else:
-                    transaction = transaction_form.save(commit=False)
-                    transaction.buyer = request.user.profile
-                    transaction.product = self.object
-                    transaction.save()
-                    return redirect('cart') 
+                transaction = transaction_form.save(commit=False)
+                transaction.buyer = request.user.profile
+                transaction.product = self.object
+                transaction.save()
+                return redirect('cart')
+
         return self.render_to_response(
             self.get_context_data(transaction_form=transaction_form)
             )

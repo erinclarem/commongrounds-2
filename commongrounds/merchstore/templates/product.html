@@ -2,14 +2,17 @@
 {% block content %}
     <h2>{{ product.name }}</h2>
     <h3>Product Details:</h3>
+    <img src="{{ product.product_image.url }}" width="300" height="200">
     <ul>
         <li>Price: {{ product.price }} Php</li>
         <li>Description: {{ product.description }}</li>
     </ul>
-    <h3>Purchase:</h3>
+    <br>
+    <h3>Order Form:</h3>
     <form method="post">
         {% csrf_token %}
         {{ transaction_form }}
+        <br>
         <button type="submit" name="submit" value="Save Form">Buy Now</button>
     </form>
 {% endblock %}
