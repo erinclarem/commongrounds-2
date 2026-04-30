@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Product List</h2>
+    <h2>Merchstore Product List</h2>
     <ul>
         {% for product in product_list %}
         <li><p style="font-size: 20px;">
@@ -8,4 +8,5 @@
         </p></li>
         {% endfor %}
     </ul>
+    <a href="{% url 'merchstore:product_create' %}">Add New Product</a>
 {% endblock %}
