@@ -73,9 +73,8 @@ class ProductDetailView(DetailView):
 class ProductCreateView(RoleRequiredMixin, CreateView):
     model = Product
     template_name = 'product_create.html'
-    fields = ['name', 'description', 'price']
+    fields = '__all__'
     required_role = 'Market Seller'
-
 
 
 class ProductUpdateView(UpdateView):
