@@ -1,5 +1,6 @@
 from .models import Product, Transaction
 from accounts.mixins import RoleRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
@@ -18,8 +19,12 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['all_products'] = Product.objects.all()
         if self.request.user.is_authenticated:
-            context['user_products'] = Product.objects.filter(owner=self.request.user.profile)
-            context['all_products'] = Product.objects.exclude(owner=self.request.user.profile)
+            context['user_products'] = Product.objects.filter(
+                owner=self.request.user.profile
+                )
+            context['all_products'] = Product.objects.exclude(
+                owner=self.request.user.profile
+                )
         return context
 
 
@@ -70,11 +75,15 @@ class ProductDetailView(DetailView):
             )
 
 
-class ProductCreateView(RoleRequiredMixin, CreateView):
+class ProductCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     model = Product
     template_name = 'product_create.html'
     fields = '__all__'
     required_role = 'Market Seller'
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user.profile
+        return super().form_valid(form)
 
 
 class ProductUpdateView(UpdateView):
