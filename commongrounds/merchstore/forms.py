@@ -11,4 +11,4 @@ class TransactionForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        exclude = ["owner"]
+        exclude = ['owner']
