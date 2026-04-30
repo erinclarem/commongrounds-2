@@ -1,4 +1,5 @@
 from .models import Product, Transaction
+from accounts.mixins import RoleRequiredMixin
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView
@@ -59,10 +60,12 @@ class ProductDetailView(DetailView):
             )
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(RoleRequiredMixin, CreateView):
     model = Product
     template_name = 'product_create.html'
     fields = ['name', 'description', 'price']
+    required_role = 'Market Seller'
+
 
 
 class ProductUpdateView(UpdateView):
