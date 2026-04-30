@@ -6,4 +6,10 @@
         <li>Price: {{ product.price }} Php</li>
         <li>Description: {{ product.description }}</li>
     </ul>
+    <h3>Purchase:</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ transaction_form }}
+        <button type="submit" name="submit" value="Save Form">Buy Now</button>
+    </form>
 {% endblock %}
