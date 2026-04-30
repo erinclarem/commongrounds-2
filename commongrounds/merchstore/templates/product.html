@@ -13,6 +13,9 @@
         {% csrf_token %}
         {{ transaction_form }}
         <br>
+        {% if product.stock == 0 %}
+            <p style="color: red;">Out of Stock</p>
+        {% endif %}
         <button type="submit" 
                 name="submit" 
                 value="Save Form" 
