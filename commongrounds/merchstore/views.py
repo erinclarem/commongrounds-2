@@ -67,6 +67,9 @@ class ProductDetailView(DetailView):
                 transaction = transaction_form.save(commit=False)
                 transaction.buyer = request.user.profile
                 transaction.product = self.object
+                self.object.stock -= transaction.amount
+                if self.object.stock == 0:
+                    self.object.status = 'out of stock'
                 transaction.save()
                 return redirect('cart')
 
