@@ -110,9 +110,26 @@ class ProductUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class CartView(ListView):
-    model = Product
+class CartView(LoginRequiredMixin, ListView):
+    model = Transaction
     template_name = 'cart.html'
+
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            buyer=self.request.user.profile,
+            status='on cart'
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grouped_cart_items = {}
+        for item in context['object_list']:
+            owner = item.product.owner
+            if owner not in grouped_cart_items:
+                grouped_cart_items[owner] = []
+            grouped_cart_items[owner].append(item)
+        context['grouped_cart_items'] = grouped_cart_items
+        return context
 
 
 class TransactionListView(ListView):
