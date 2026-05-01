@@ -33,7 +33,8 @@ class Event(models.Model):
     location = models.CharField(max_length=255)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    event_capacity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    event_capacity = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)])
     status = models.CharField(
         max_length=20,
         choices=[
@@ -53,8 +54,8 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse(
             'localevents:localevent_detail',
-              args=[self.id]
-              )
+            args=[self.id]
+        )
 
 
 class EventSignup(models.Model):
@@ -71,7 +72,7 @@ class EventSignup(models.Model):
         related_name='event_signups'
     )
     new_registrant = models.CharField(
-        max_length=255, 
-        null=True, 
+        max_length=255,
+        null=True,
         blank=True
-        )
+    )

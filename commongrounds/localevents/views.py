@@ -19,11 +19,13 @@ class LocalEventsListView(ListView):
             profile = user.profile
 
             created_events = Event.objects.filter(organizers=profile)
-            signed_events = Event.objects.filter(event_signups__user_registrant=profile)
+            signed_events = Event.objects.filter(
+                event_signups__user_registrant=profile)
 
             other_events = Event.objects.all()
             other_events = other_events.exclude(organizers=profile)
-            other_events = other_events.exclude(event_signups__user_registrant=profile)
+            other_events = other_events.exclude(
+                event_signups__user_registrant=profile)
 
             context['created_events'] = created_events
             context['signed_events'] = signed_events
@@ -49,11 +51,9 @@ class LocalEventDetailView(DetailView):
         if user.is_authenticated:
             profile = user.profile
 
-            # check if user is organizer
             if event.organizers.filter(id=profile.id).exists():
                 can_signup = False
 
-        # check if event is full
         if event.event_signups.count() >= event.event_capacity:
             can_signup = False
 
