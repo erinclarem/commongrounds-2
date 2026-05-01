@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>My Cart</h2>
+    {% for owner, items in grouped_cart_items.items %}
+        <h3>Seller: {{ owner }}</h3>
+        <ul>
+            {% for item in items %}
+                <li>{{ item.product }} - Quantity: {{ item.amount }}</li>
+            {% endfor %}
+        </ul>
+    {% empty %}
+    <p>Your cart is empty.</p>
+    {% endfor %}
+    <a href="{% url 'merchstore:products_list' %}">Buy More Items</a>
+{% endblock %}
