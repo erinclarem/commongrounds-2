@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>My Transactions</h2>
+    {% for buyer, transactions in grouped_transactions.items %}
+        <h3>Buyer: {{ buyer }}</h3>
+        <ul>
+            {% for transaction in transactions %}
+                <li>{{ transaction.product }} - Quantity: {{ transaction.amount }}</li>
+            {% endfor %}
+        </ul>
+    {% empty %}
+    <p>You have no transactions.</p>
+    {% endfor %}
+{% endblock %}
