@@ -16,3 +16,5 @@ class ProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['owner'].disabled = True
+        if self.fields['stock'] == 0:
+            self.fields['status'].initial = 'out of stock'

@@ -91,10 +91,20 @@ class ProductCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Product
     template_name = 'product_update.html'
-    fields = ['name', 'description', 'price']
+    required_role = 'Market Seller'
+    form_class = ProductForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['initial'] = {'owner': self.request.user.profile}
+        return kwargs
+    
+    def form_valid(self, form):
+        form.instance.owner = self.request.user.profile
+        return super().form_valid(form)
 
 
 class CartView(ListView):

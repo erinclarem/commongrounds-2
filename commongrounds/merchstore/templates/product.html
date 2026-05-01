@@ -8,6 +8,10 @@
         <li>Description: {{ product.description }}</li>
     </ul>
     <br>
+    {% if request.user.is_authenticated and request.user.profile == product.owner %}
+        <a href="{% url 'merchstore:product_update' product.pk %}">Update Product Details</a>
+    {% endif %}
+    <br>
     <h3>Order Form:</h3>
     <form method="post">
         {% csrf_token %}
