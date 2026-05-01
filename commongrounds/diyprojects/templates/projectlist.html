@@ -1,9 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>DIY Project List</h2>
+
+{% if user.is_authenticated %}
+<h3>Created Projects</h3>
 <ul>
-{% for project in project_list %}
+{% for project in created_projects %}
     <li><a href="{{ project.get_absolute_url }}">{{ project }}</a></li>
     {% endfor %}
 </ul>
+
+<h3>Favorite Projects</h3>
+<ul>
+{% for project in favorited_projects %}
+    <li><a href="{{ project.get_absolute_url }}">{{ project }}</a></li>
+    {% endfor %}
+</ul>
+
+<h3>Reviewed Projects</h3>
+<ul>
+{% for project in reviewed_projects %}
+    <li><a href="{{ project.get_absolute_url }}">{{ project }}</a></li>
+    {% endfor %}
+</ul>
+{%endif%}
+
+<h3>All Projects</h3>
+<ul>
+{% for project in all_projects %}
+    <li><a href="{{ project.get_absolute_url }}">{{ project }}</a></li>
+    {% endfor %}
+</ul>
+<br>
+<a href="{% url 'diyprojects:project_add' %}"><p>New Project</p></a>
 {% endblock %}
