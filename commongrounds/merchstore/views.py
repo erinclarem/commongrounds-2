@@ -118,12 +118,12 @@ class CartView(LoginRequiredMixin, ListView):
         return Transaction.objects.filter(
             buyer=self.request.user.profile,
             status='on cart'
-        )
+        ).select_related('product', 'product__owner')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         grouped_cart_items = {}
-        for item in context['object_list']:
+        for item in self.object_list:
             owner = item.product.owner
             if owner not in grouped_cart_items:
                 grouped_cart_items[owner] = []
@@ -132,6 +132,22 @@ class CartView(LoginRequiredMixin, ListView):
         return context
 
 
-class TransactionListView(ListView):
+class TransactionListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = 'transactions.html'
+
+    def get_queryset(self):
+        return Transaction.objects.filter(
+            product__owner=self.request.user.profile
+        ).exclude(status='on cart').select_related('buyer', 'product')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        grouped_transactions = {}
+        for transaction in self.object_list:
+            buyer = transaction.buyer
+            if buyer not in grouped_transactions:
+                grouped_transactions[buyer] = []
+            grouped_transactions[buyer].append(transaction)
+        context['grouped_transactions'] = grouped_transactions
+        return context
