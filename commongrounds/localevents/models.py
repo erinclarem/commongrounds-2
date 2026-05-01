@@ -1,20 +1,18 @@
-from cProfile import Profile
-
 from django.db import models
 from django.urls import reverse
-
-from commongrounds.commongrounds import settings
+from django.core.validators import MinValueValidator
+from accounts.models import Profile
 
 
 class EventType(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Event(models.Model):
@@ -23,56 +21,57 @@ class Event(models.Model):
         EventType,
         on_delete=models.SET_NULL,
         null=True,
-        editable=False,
         related_name='events'
     )
-    organizers = models.ManyToManyFiels(
+    organizers = models.ManyToManyField(
         Profile,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='organized_events'
-        )
+        related_name='organized_events',
+        blank=True
+    )
     event_image = models.ImageField(upload_to='event_images/')
     description = models.TextField()
-    location = models.CharField()
+    location = models.CharField(max_length=255)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    event_capacity = models.PositiveIntegerField(validators=[MinValueValidator(0)])
+    event_capacity = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     status = models.CharField(
-        max_length=20, 
-        choices=(
-            ('available', 'Available'),
-            ('full', 'Full'),
-            ('done', 'Done'),
-            ('canceled', 'Canceled'),
-            ), 
-        default='available')
+        max_length=20,
+        choices=[
+            ('Available', 'Available'),
+            ('Full', 'Full'),
+            ('Done', 'Done'),
+            ('Cancelled', 'Cancelled'),
+        ],
+        default='Available'
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.title} at {self.location} from {self.start_time} to {self.end_time}"
-
-    def get_absolute_url(self):
-        return reverse('localevents:localevent_detail', args=[str(self.id)])
 
     class Meta:
         ordering = ['-created_on']
 
-class EventSignup(models.Model):
+    def get_absolute_url(self):
+        return reverse(
+            'localevents:localevent_detail',
+              args=[self.id]
+              )
 
-    Event = models.ForeignKey(
+
+class EventSignup(models.Model):
+    event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
         related_name='event_signups'
     )
-    User_Registrant = models.ForeignKey(
+    user_registrant = models.ForeignKey(
         Profile,
-        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name='event_signups'
     )
-     
-    New_Registrant = models.CharField()
-
-# Create your models here.
+    new_registrant = models.CharField(
+        max_length=255, 
+        null=True, 
+        blank=True
+        )
