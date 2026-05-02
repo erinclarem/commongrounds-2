@@ -1,12 +1,13 @@
 from django import forms
-from .models import Event, EventSignup
+from .models import Event, EventType, EventSignup
 
 
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = [
-            'title',    
+            'title',   
+            'category',  
             'event_image',
             'description',
             'location',
