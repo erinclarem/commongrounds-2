@@ -2,6 +2,7 @@
 
 {% block content %}
 <h2>Local Events List</h2>
+<a href="{% url 'localevents:localevent_add' %}">Create Event</a>
 <ul>
     {% for localevent in events %}
     <li>
