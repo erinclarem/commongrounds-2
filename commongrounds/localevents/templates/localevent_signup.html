@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href="/localevents/events">Back to Events List</a>
+
+<h2>Event Signup</h2>
+<h3>{{ form.instance.event.title }}</h3>
+
+<p>{{ form.instance.event.description }}</p>
+<p>{{ form.instance.event.location }}</p>
+
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.new_registrant }}
+
+    <button type="submit">
+        Sign Up
+    </button>
+</form>
+
+{% endblock %}
