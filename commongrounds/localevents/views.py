@@ -13,22 +13,19 @@ class LocalEventsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user
 
-        if user.is_authenticated:
-            profile = user.profile
-            created_events = Event.objects.filter(organizers=profile)
-            signed_events = Event.objects.filter(
+        if self.request.user.is_authenticated:
+            profile = self.request.user.profile
+
+            context['created_events'] = Event.objects.filter(
+                organizers=profile)
+            context['signed_events'] = Event.objects.filter(
                 event_signups__user_registrant=profile)
-            other_events = Event.objects.exclude(
+            context['other_events'] = Event.objects.exclude(
                 organizers=profile
             ).exclude(
                 event_signups__user_registrant=profile
             )
-
-            context['created_events'] = created_events
-            context['signed_events'] = signed_events
-            context['other_events'] = other_events
         else:
             context['other_events'] = Event.objects.all()
 
@@ -62,11 +59,13 @@ class LocalEventDetailView(DetailView):
 
         return context
 
+
 class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Event
     template_name = "localevent_form.html"
     form_class = EventForm
-    required_role = "Event Organizer" #check with accounts app to check if this is the name
+    # check with accounts app to check if this is the name
+    required_role = "Event Organizer"
 
     def form_valid(self, form):
         response = super().form_valid(form)

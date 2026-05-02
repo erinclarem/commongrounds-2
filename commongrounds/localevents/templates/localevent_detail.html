@@ -20,9 +20,11 @@
 <hr>
 <form method="post" action="/localevents/event/{{ event.id }}/signup">
     {% csrf_token %}
-    <button type="submit" {% if is_full %}disabled{% endif %}>
-        Sign Up
-    </button>
+    {% if can_signup %}
+        <button type="submit">Sign Up</button>
+    {% else %}
+        <button type="submit" disabled>Sign Up</button>
+    {% endif %}
 </form>
 
 {% if is_owner %}
