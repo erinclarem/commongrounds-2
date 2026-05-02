@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.mixins import RoleRequiredMixin
 from .models import Event, EventType, EventSignup
 from .forms import EventForm, EventSignupForm
-from django.shortcuts import redirect
+from django.urls import reverse
 
 
 class LocalEventsListView(ListView):
@@ -39,19 +39,14 @@ class LocalEventDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         event = self.object
-        user = self.request.user
         is_owner = False
         is_full = event.event_signups.count() >= event.event_capacity
-        can_signup = True
 
-        if user.is_authenticated:
-            profile = user.profile
-            if event.organizers.filter(id=profile.id).exists():
-                can_signup = False
-                is_owner = True
+        if self.request.user.is_authenticated:
+            profile = self.request.user.profile
+            is_owner = event.organizers.filter(id=profile.id).exists()
 
-        if is_full:
-            can_signup = False
+        can_signup = not is_full and not is_owner
 
         context['can_signup'] = can_signup
         context['is_owner'] = is_owner
@@ -63,14 +58,15 @@ class LocalEventDetailView(DetailView):
 class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Event
     template_name = "localevent_form.html"
-    form_class = EventForm
-    # check with accounts app to check if this is the name
+    form_class = EventForm  
     required_role = "Event Organizer"
 
     def form_valid(self, form):
         response = super().form_valid(form)
         self.object.organizers.add(self.request.user.profile)
         return response
+    def get_success_url(self):
+        return reverse('localevents:detail', kwargs={'pk': self.object.pk})
 
 
 class LocalEventEditView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
@@ -89,9 +85,11 @@ class LocalEventEditView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
         self.object.save()
         return response
+    def get_success_url(self):
+        return reverse('localevents:detail', kwargs={'pk': self.object.pk})
 
 
-class LocalEventSignupView(CreateView):
+class LocalEventSignupView(LoginRequiredMixin, CreateView):
     model = EventSignup
     template_name = "localevent_signup.html"
     form_class = EventSignupForm
@@ -103,6 +101,6 @@ class LocalEventSignupView(CreateView):
             form.instance.user_registrant = self.request.user.profile
             form.instance.new_registrant = None
         else:
-            return redirect('accounts:login')
+            form.instance.user_registrant = None
 
         return super().form_valid(form)
