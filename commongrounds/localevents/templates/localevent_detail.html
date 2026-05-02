@@ -1,19 +1,34 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <a href="/localevents/list">Back to Local Events List</a>
-<h2>{{ event.title }}</h2>
 
+<h2>{{ event.title }}</h2>
 <h3>Category: {{ event.category }}</h3>
+
 <h3>Description:</h3>
 <p>{{ event.description }}</p>
-<br>
+
 <h3>Location:</h3>
 <p>{{ event.location }}</p>
+
 <h4>Start Time: {{ event.start_time }}</h4>
 <h4>End Time: {{ event.end_time }}</h4>
-<br>
+
 <p><strong>Created on:</strong> {{ event.created_on }}</p>
 <p><strong>Updated on:</strong> {{ event.updated_on }}</p>
+
+<hr>
+<form method="post" action="/localevents/event/{{ event.id }}/signup">
+    {% csrf_token %}
+    <button type="submit" {% if is_full %}disabled{% endif %}>
+        Sign Up
+    </button>
+</form>
+
+{% if is_owner %}
+<a href="/localevents/event/{{ event.id }}/edit">
+    Edit Event
+</a>
+{% endif %}
 
 {% endblock %}

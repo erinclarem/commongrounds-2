@@ -12,16 +12,13 @@ class LocalEventsListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         user = self.request.user
 
         if user.is_authenticated:
             profile = user.profile
-
             created_events = Event.objects.filter(organizers=profile)
             signed_events = Event.objects.filter(
                 event_signups__user_registrant=profile)
-
             other_events = Event.objects.exclude(
                 organizers=profile
             ).exclude(
@@ -43,24 +40,27 @@ class LocalEventDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         event = self.object
         user = self.request.user
-
         can_signup = True
+        is_owner = False
 
         if user.is_authenticated:
             profile = user.profile
-
             if event.organizers.filter(id=profile.id).exists():
                 can_signup = False
+                is_owner = True
 
-        if event.event_signups.count() >= event.event_capacity:
+        is_full = event.event_signups.count() >= event.event_capacity
+
+        if is_full:
             can_signup = False
 
         context['can_signup'] = can_signup
-        return context
+        context['is_owner'] = is_owner
+        context['is_full'] = is_full
 
+        return context
 
 class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Event
@@ -107,11 +107,13 @@ class LocalEventSignupView(CreateView):
     def form_valid(self, form):
         event = Event.objects.get(id=self.kwargs['pk'])
         form.instance.event = event
+
         user = self.request.user
+
         if user.is_authenticated:
             form.instance.user_registrant = user.profile
             form.instance.new_registrant = None
         else:
-            form.instance.user_registrant = None
+            return redirect('accounts:login')
 
         return super().form_valid(form)
