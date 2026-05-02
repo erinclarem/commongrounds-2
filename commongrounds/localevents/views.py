@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.mixins import RoleRequiredMixin
 from .models import Event, EventType, EventSignup
 from .forms import EventForm, EventSignupForm
+from django.shortcuts import redirect
 
 
 class LocalEventsListView(ListView):
@@ -42,16 +43,15 @@ class LocalEventDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         event = self.object
         user = self.request.user
-        can_signup = True
         is_owner = False
+        is_full = event.event_signups.count() >= event.event_capacity
+        can_signup = True
 
         if user.is_authenticated:
             profile = user.profile
             if event.organizers.filter(id=profile.id).exists():
                 can_signup = False
                 is_owner = True
-
-        is_full = event.event_signups.count() >= event.event_capacity
 
         if is_full:
             can_signup = False
@@ -66,14 +66,11 @@ class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Event
     template_name = "localevent_form.html"
     form_class = EventForm
-    required_role = "Event Organizer"
+    required_role = "Event Organizer" #check with accounts app to check if this is the name
 
     def form_valid(self, form):
         response = super().form_valid(form)
-
-        profile = self.request.user.profile
-        self.object.organizers.add(profile)
-
+        self.object.organizers.add(self.request.user.profile)
         return response
 
 
@@ -86,32 +83,25 @@ class LocalEventEditView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        signup_count = self.object.event_signups.count()
-        capacity = self.object.event_capacity
-
-        if signup_count >= capacity:
+        if self.object.event_signups.count() >= self.object.event_capacity:
             self.object.status = 'Full'
         else:
             self.object.status = 'Available'
 
         self.object.save()
-
         return response
 
 
 class LocalEventSignupView(CreateView):
     model = EventSignup
-    template_name = "localevent_signup_form.html"
+    template_name = "localevent_signup.html"
     form_class = EventSignupForm
 
     def form_valid(self, form):
         event = Event.objects.get(id=self.kwargs['pk'])
         form.instance.event = event
-
-        user = self.request.user
-
-        if user.is_authenticated:
-            form.instance.user_registrant = user.profile
+        if self.request.user.is_authenticated:
+            form.instance.user_registrant = self.request.user.profile
             form.instance.new_registrant = None
         else:
             return redirect('accounts:login')

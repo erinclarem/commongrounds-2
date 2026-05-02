@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import LocalEventsListView, LocalEventDetailView, LocalEventAddView, LocalEventEditView, LocalEventSignupView
+
 urlpatterns = [
     path('events', LocalEventsListView.as_view(), name='localevents_list'),
     path('event/<int:pk>/',
