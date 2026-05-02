@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.mixins import RoleRequiredMixin
-from .models import Event, EventSignup
+from .models import Event, EventType, EventSignup
 from .forms import EventForm, EventSignupForm
 
 
@@ -22,10 +22,11 @@ class LocalEventsListView(ListView):
             signed_events = Event.objects.filter(
                 event_signups__user_registrant=profile)
 
-            other_events = Event.objects.all()
-            other_events = other_events.exclude(organizers=profile)
-            other_events = other_events.exclude(
-                event_signups__user_registrant=profile)
+            other_events = Event.objects.exclude(
+                organizers=profile
+            ).exclude(
+                event_signups__user_registrant=profile
+            )
 
             context['created_events'] = created_events
             context['signed_events'] = signed_events
@@ -104,15 +105,13 @@ class LocalEventSignupView(CreateView):
     form_class = EventSignupForm
 
     def form_valid(self, form):
-        event_id = self.kwargs['pk']
-        event = Event.objects.get(id=event_id)
-
+        event = Event.objects.get(id=self.kwargs['pk'])
         form.instance.event = event
-
         user = self.request.user
-
         if user.is_authenticated:
-            profile = user.profile
-            form.instance.user_registrant = profile
+            form.instance.user_registrant = user.profile
+            form.instance.new_registrant = None
+        else:
+            form.instance.user_registrant = None
 
         return super().form_valid(form)

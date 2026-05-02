@@ -27,6 +27,7 @@ class Event(models.Model):
         Profile,
         related_name='organized_events',
         blank=True
+
     )
     event_image = models.ImageField(upload_to='event_images/')
     description = models.TextField()
@@ -36,14 +37,13 @@ class Event(models.Model):
     event_capacity = models.PositiveIntegerField(
         validators=[MinValueValidator(1)])
     status = models.CharField(
-        max_length=20,
+        max_length=10,
         choices=[
             ('Available', 'Available'),
             ('Full', 'Full'),
             ('Done', 'Done'),
             ('Cancelled', 'Cancelled'),
         ],
-        default='Available'
     )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
