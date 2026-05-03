@@ -18,12 +18,12 @@
 <p><strong>Updated on:</strong> {{ event.updated_on }}</p>
 
 <hr>
-<form method="post" action="/localevents/event/{{ event.id }}/signup">
+<form method="post">
     {% csrf_token %}
     {% if can_signup %}
-        <button type="submit">Sign Up</button>
+    <button type="submit">Sign Up</button>
     {% else %}
-        <button type="submit" disabled>Sign Up</button>
+    <button type="submit" disabled>Sign Up</button>
     {% endif %}
 </form>
 

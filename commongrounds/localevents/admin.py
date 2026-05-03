@@ -10,8 +10,10 @@ class EventTypeAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     model = Event
     search_fields = ['title', 'location']
-    list_display = ['title', 'category', 'location', 'start_time', 'end_time']
-    list_filter = ['category', 'start_time', 'end_time']
+    list_display = ['title', 'category', 'location',
+                    'start_time', 'end_time', 'status']
+    list_filter = ['category', 'start_time', 'end_time', 'status']
+    filter_horizontal = ['organizers']
 
 
 admin.site.register(Event, EventAdmin)

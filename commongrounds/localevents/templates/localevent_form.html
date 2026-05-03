@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href="/localevents/events">Back to Events List</a>
+
+<h2>
+    {% if object %}
+    Edit Event
+    {% else %}
+    Create Event
+    {% endif %}
+</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <p>
+        Title:<br>
+        {{ form.title }}
+    </p>
+
+    <p>
+        Category:<br>
+        {{ form.category }}
+    </p>
+
+    <p>
+        Event Image:<br>
+        {{ form.event_image }}
+    </p>
+
+    <p>
+        Description:<br>
+        {{ form.description }}
+    </p>
+
+    <p>
+        Location:<br>
+        {{ form.location }}
+    </p>
+
+    <p>
+        Start Time:<br>
+        {{ form.start_time }}
+    </p>
+
+    <p>
+        End Time:<br>
+        {{ form.end_time }}
+    </p>
+
+    <p>
+        Event Capacity:<br>
+        {{ form.event_capacity }}
+    </p>
+
+    <p>
+        Status:<br>
+        {{ form.status }}
+    </p>
+
+    <button type="submit">
+        Save
+    </button>
+</form>
+
+{% endblock %}
