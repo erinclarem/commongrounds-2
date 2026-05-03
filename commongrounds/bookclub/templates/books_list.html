@@ -2,10 +2,45 @@
 
 {% block content %}
 <h2>Book Club List</h2>
+
+<a href="/bookclub/book/add">Create Event</a>
+
+{% if user.is_authenticated %}
+<h3>Contributed Books</h3>
 <ul>
-{% for book in book_list %}
+    {% for book in contributed_books %}
     <li><a href="{{ book.get_absolute_url }}">{{ book }}</a></li>
+    {% empty %}
+    <li>You have not contributed any books to the system.</li>
     {% endfor %}
 </ul>
-<a href="{% url 'bookclub:book_create' %}">Create New Book</a>
+
+<h3>Bookmarked Books</h3>
+<ul>
+    {% for book in bookmarked_books %}
+    <li><a href="{{ book.get_absolute_url }}">{{ book }}</a></li>
+    {% empty %}
+    <li>You have not bookmarked any books.</li>
+    {% endfor %}
+</ul>
+
+<h3>Reviewed Books</h3>
+<ul>
+    {% for book in reviewed_books %}
+    <li><a href="{{ book.get_absolute_url }}">{{ book }}</a></li>
+    {% empty %}
+    <li>You have not reviewed any books.</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h3>All Books</h3>
+<ul>
+    {% for book in all_books %}
+    <li><a href="{{ book.get_absolute_url }}">{{ book }}</a></li>
+    {% empty %}
+    <li>There are no books available.</li>
+    {% endfor %}
+</ul>
+
 {% endblock %}

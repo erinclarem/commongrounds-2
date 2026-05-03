@@ -17,14 +17,18 @@ class BooksListView(ListView):
             context['contributed_books'] = Book.objects.filter(
                 contributor=self.request.user.profile
             )
-            context['bookmarked_books'] = Bookmark.objects.filter(
-                profile=self.request.user.profile
+            context['bookmarked_books'] = Book.objects.filter(
+                bookmarks__profile=self.request.user.profile
             )
-            context['reviewed_books'] = BookReview.objects.filter(
-                user_reviewer=self.request.user.profile
+            context['reviewed_books'] = Book.objects.filter(
+                book_reviews__user_reviewer=self.request.user.profile
             )
             context['all_books'] = Book.objects.exclude(
                 contributor=self.request.user.profile
+            ).exclude(
+                bookmarks__profile=self.request.user.profile
+            ).exclude(
+                book_reviews__user_reviewer=self.request.user.profile
             )
         return context
 

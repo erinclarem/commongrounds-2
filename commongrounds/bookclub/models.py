@@ -53,14 +53,14 @@ class BookReview (models.Model):
         Profile,
         on_delete=models.CASCADE,
         null=True,
-        related_name='book reviews'
+        related_name='book_reviews'
     )
     anon_reviewer = models.TextField()
     book = models.ForeignKey(
         Book,
         on_delete=models.CASCADE,
         null=True,
-        related_name='book reviews'
+        related_name='book_reviews'
     )
     title = models.CharField(max_length=255)
     comment = models.TextField()
