@@ -15,6 +15,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user.profile
 
     def get_success_url(self):
-        return reverse_lazy('accounts:profile-update', kwargs={
+        return reverse_lazy('accounts:profile_update', kwargs={
             'username': self.request.user.username
         })
