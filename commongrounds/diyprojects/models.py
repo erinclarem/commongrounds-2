@@ -88,6 +88,11 @@ class ProjectReview(models.Model):
         null=True,
         blank=True
     )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+    )
 
 
 class ProjectRating(models.Model):
@@ -99,3 +104,8 @@ class ProjectRating(models.Model):
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
         )
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        related_name='ratings',
+    )
