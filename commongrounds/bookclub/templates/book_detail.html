@@ -2,7 +2,28 @@
 
 {% block content %}
 <h2>{{ book }}</h2>
+<h3>Bookmarks:</h3>
+<p>{{bookmarks}}</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Bookmark</button>
+</form>
+<h3>Available for Borrowing:</h3>
+{% if {{book.available_to_borrow}} %}
+    <p>Yes</p>
+{% else %}
+    <p>No</p>
+{% endif %}
+<form method="post" action="/bookclub/book/{{ book.id }}/borrow">
+    {% csrf_token %}
+    {% if book.available_to_borrow %}
+        <button type="submit">Borrow This Book</button>
+    {% else %}
+        <button type="submit" disabled>Borrow This Book</button>
+    {% endif %}
+</form>
 <br>
+<hr>
 <h3>Genre:</h3>
 <p>{{book.genre}}</p>
 <h3>Author:</h3>
@@ -12,4 +33,31 @@
 <br>
 <h4>Created On: {{book.created_on}}</h4>
 <h4>Updated On: {{book.updated_on}}</h4>
+
+{% if is_contributor %}
+<a href="/bookclub/book/{{ book.id }}/edit">Update Book</a>
+{% endif %}
+<hr>
+
+<h3>Leave a Review:</h3>
+<form method="post">
+    {% csrf_token %}
+    
+</form>
+<br>
+<h3>All Reviews</h3>
+<ul>
+    {% for review in book_reviews %}
+        {% if review.user_reviewer.exists() %}
+            <h3>{{review.user_reviewer}}</h3>
+        {% else %}
+            <h3>Anonymous</h3>
+        {% endif %}
+        <h4>{{review.user_reviewer}}</h4>
+        <h5>{{ review.title }}</h5>
+        <p>{{ review.comment }}</p>
+    {% empty %}
+        <li>There are no reviews for this book yet.</li>
+    {% endfor %}
+</ul>
 {% endblock %}
