@@ -84,10 +84,10 @@ class ProductCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     required_role = 'Market Seller'
     form_class = ProductForm
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['initial'] = {'owner': self.request.user.profile}
-        return kwargs
+    def get_initial(self):
+        initial = super().get_initial()
+        initial['owner'] = self.request.user.profile
+        return initial
 
     def form_valid(self, form):
         form.instance.owner = self.request.user.profile
@@ -100,10 +100,8 @@ class ProductUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
     required_role = 'Market Seller'
     form_class = ProductForm
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['initial'] = {'owner': self.request.user.profile}
-        return kwargs
+    def get_queryset(self):
+        return Product.objects.filter(owner=self.request.user.profile)
     
     def form_valid(self, form):
         form.instance.owner = self.request.user.profile
