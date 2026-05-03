@@ -1,9 +1,8 @@
-from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
+from django.views.generic import ListView, DetailView, CreateView
 from .models import Book, Bookmark, BookReview
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import BookReviewForm
+from .forms import BookForm, BookReviewForm
 
 
 class BooksListView(ListView):
@@ -66,5 +65,14 @@ class BookDetailView(DetailView):
             form.instance.anon_reviewer = 'Anonymous'
         return response
 
-    def get_success_url(self):
-        return reverse('bookclub:detail', kwargs={'pk': self.object.pk})
+
+class BookCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
+    model = Book
+    template_name = "book_create.html"
+    form_class = BookForm
+    required_role = "Book Contributor"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.contributor = self.request.user.profile
+        return response
