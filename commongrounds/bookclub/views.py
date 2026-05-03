@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .models import Book, Bookmark, BookReview
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -75,4 +75,16 @@ class BookCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         self.object.contributor = self.request.user.profile
+        return response
+
+
+class BookUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
+    model = Book
+    template_name = "book_update.html"
+    form_class = BookForm
+    required_role = "Book Contributor"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.save()
         return response
