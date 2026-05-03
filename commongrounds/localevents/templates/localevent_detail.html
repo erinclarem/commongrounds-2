@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<a href="/localevents/events">Back to Local Events List</a>
+<a href="/localevents/list">Back to Local Events List</a>
 
 <h2>{{ event.title }}</h2>
 <h3>Category: {{ event.category }}</h3>
@@ -26,11 +26,6 @@
     <button type="submit" disabled>Sign Up</button>
     {% endif %}
 </form>
-{% if messages %}
-{% for message in messages %}
-<p>{{ message }}</p>
-{% endfor %}
-{% endif %}
 
 {% if is_owner %}
 <a href="/localevents/event/{{ event.id }}/edit">

@@ -1,5 +1,3 @@
-from pyexpat.errors import messages
-
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.mixins import RoleRequiredMixin
@@ -7,7 +5,6 @@ from .models import Event, EventType, EventSignup
 from .forms import EventForm, EventSignupForm
 from django.urls import reverse
 from django.shortcuts import redirect, render
-from django.views import View
 
 
 class LocalEventsListView(ListView):
@@ -36,29 +33,7 @@ class LocalEventsListView(ListView):
         return context
 
 
-class BaseSignupView(View):
-
-    def post(self, request, *args, **kwargs):
-        event = Event.objects.get(pk=kwargs['pk'])
-
-        if not self.can_signup(event, request.user):
-            return redirect(event.get_absolute_url())
-
-        return self.handle_signup(request, event)
-
-    def can_signup(self, event, user):
-        if event.event_signups.count() >= event.event_capacity:
-            return False
-        if user.is_authenticated:
-            return not event.organizers.filter(id=user.profile.id).exists()
-
-        return True
-
-    def handle_signup(self, request, event):
-        raise NotImplementedError
-
-
-class LocalEventDetailView(BaseSignupView, DetailView):
+class LocalEventDetailView(DetailView):
     model = Event
     template_name = "localevent_detail.html"
 
@@ -72,24 +47,32 @@ class LocalEventDetailView(BaseSignupView, DetailView):
             is_owner = self.object.organizers.filter(id=profile.id).exists()
 
         can_signup = not is_full and not is_owner
+
         context['can_signup'] = can_signup
         context['is_owner'] = is_owner
         context['is_full'] = is_full
 
         return context
 
-    def handle_signup(self, request, event):
+    def post(self, request, *args, **kwargs):
+
+        if self.get_object().event_signups.count() >= self.get_object().event_capacity:
+            return redirect(self.get_object().get_absolute_url())
+
         if request.user.is_authenticated:
+            profile = request.user.profile
+
+            if self.get_object().organizers.filter(id=profile.id).exists():
+                return redirect(self.get_object().get_absolute_url())
+
             EventSignup.objects.create(
                 event=self.get_object(),
-                user_registrant=request.user.profile
+                user_registrant=profile
             )
-
-            messages.success(request, "Thank you for signing up!")
-            return redirect(event.get_absolute_url())
+            return redirect(self.get_object().get_absolute_url())
 
         else:
-            return redirect('localevents:localevent_signupform', pk=event.pk)
+            return redirect('localevents:localevent_signup', pk=self.get_object().pk)
 
 
 class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
@@ -130,18 +113,19 @@ class LocalEventEditView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
         return reverse('localevents:localevent_detail', kwargs={'pk': self.object.pk})
 
 
-class LocalEventSignupFormView(CreateView):
+class LocalEventSignupView(CreateView):
     model = EventSignup
-    template_name = "localevent_signupform.html"
+    template_name = "localevent_signup.html"
     form_class = EventSignupForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.get(pk=self.kwargs['pk'])
+        context['event'] = Event.objects.get(id=self.kwargs['pk'])
         return context
 
     def form_valid(self, form):
-        form.instance.event = Event.objects.get(pk=self.kwargs['pk'])
+        form.instance.event = Event.objects.get(id=self.kwargs['pk'])
+        form.instance.user_registrant = None
         return super().form_valid(form)
 
     def get_success_url(self):
