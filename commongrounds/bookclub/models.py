@@ -26,6 +26,7 @@ class Book (models.Model):
     )
     contributor = models.ForeignKey(
         Profile,
+        on_delete=models.SET_NULL,
         null=True,
         related_name='books'
     )
