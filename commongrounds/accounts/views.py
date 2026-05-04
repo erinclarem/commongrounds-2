@@ -25,7 +25,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user.profile
 
     def get_success_url(self):
-            return reverse_lazy('home')
+            return reverse_lazy('homepage')
 
     def homepage(request):
         return render(request, "homepage.html")
