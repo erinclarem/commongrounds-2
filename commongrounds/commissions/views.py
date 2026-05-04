@@ -4,11 +4,9 @@ from .models import Commission
 
 class CommissionListView(ListView):
     model = Commission
-    template_name = 'commissions/commission_list.html'
-    context_object_name = 'commissions'
+    template_name = 'commission_list.html'
 
 
 class CommissionDetailView(DetailView):
     model = Commission
-    template_name = 'commissions/commission_detail.html'
-    context_object_name = 'commission'
+    template_name = 'commission_detail.html'

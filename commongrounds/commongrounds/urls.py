@@ -16,11 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import TemplateView
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='homepage.html'), name='homepage'),
     path('admin/', admin.site.urls),
-    path('merchstore/', include('merchstore.urls')),
+    path('merchstore/', include('merchstore.urls', namespace='merchstore')),
+    path('localevents/', include('localevents.urls', namespace='localevents')),
     path('bookclub/', include('bookclub.urls', namespace='bookclub')),
     path('diyprojects/', include('diyprojects.urls', namespace='diyprojects')),
-    path('commissions/', include('commissions.urls')),
-    path('localevents/', include('localevents.urls', namespace='localevents')),
+    path('commissions/', include('commissions.urls', namespace='commissions')),
+    path('accounts/', include('accounts.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

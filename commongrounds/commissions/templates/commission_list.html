@@ -4,10 +4,10 @@
 <h2>Commission Requests</h2>
 
 <ul>
-    {% for commission in commissions %}
+    {% for commission in commission_list %}
         <li>
-            <a href="{% url 'commission_detail' commission.pk %}">
-                {{ commission.title }}
+            <a href="{{ commission.get_absolute_url }}">
+                {{ commission }}
             </a>
         </li>
     {% endfor %}

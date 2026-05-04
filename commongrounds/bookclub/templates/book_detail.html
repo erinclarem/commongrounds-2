@@ -2,11 +2,14 @@
 
 {% block content %}
 <h2>{{ book }}</h2>
-<h3>Genre: {{book.genre}}</h3>
+<br>
+<h3>Genre:</h3>
+<p>{{book.genre}}</p>
 <h3>Author:</h3>
-    <p>{{book.author}}</p>
-<h3>Publication Yeaer:</h3>
-    <p>{{book.publication_year}}</p>
-<h3>Created On: {{book.created_on}}</h3>
-<h3>Updated On: {{book.updated_on}}</h3>
+<p>{{book.author}}</p>
+<h3>Publication Year:</h3>
+<p>{{book.publication_year}}</p>
+<br>
+<h4>Created On: {{book.created_on}}</h4>
+<h4>Updated On: {{book.updated_on}}</h4>
 {% endblock %}
