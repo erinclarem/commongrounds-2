@@ -76,6 +76,10 @@ class Favorite(models.Model):
     )
 
 
+    class Meta:
+        verbose_name = 'favorite'
+        verbose_name_plural = 'favorites'
+
 class ProjectReview(models.Model):
     reviewer = models.ForeignKey(
         Profile,
@@ -94,6 +98,10 @@ class ProjectReview(models.Model):
         related_name='reviews',
     )
 
+    class Meta:
+        verbose_name = 'review'
+        verbose_name_plural = 'reviews'
+
 
 class ProjectRating(models.Model):
     profile = models.ForeignKey(
@@ -109,3 +117,7 @@ class ProjectRating(models.Model):
         on_delete=models.CASCADE,
         related_name='ratings',
     )
+
+    class Meta:
+        verbose_name = 'rating'
+        verbose_name_plural = 'ratings'
