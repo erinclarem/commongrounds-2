@@ -66,10 +66,8 @@ class ProjectDetailView(DetailView):
         if self.request.user.is_authenticated:
             profile = self.request.user.profile
             context['is_favorited'] = project.favorites.filter(profile=profile).exists()
-            if 'ProjectRatingForm' not in context:
-                context['ProjectRatingForm'] = ProjectRatingForm()
-            if 'ProjectReviewForm' not in context:
-                context['ProjectReviewForm'] = ProjectReviewForm()
+            context['ProjectRatingForm'] = ProjectRatingForm()
+            context['ProjectReviewForm'] = ProjectReviewForm()
 
         return context
     
@@ -93,7 +91,7 @@ class ProjectDetailView(DetailView):
                     profile=profile,
                     date_favorited=timezone.now()
                 )
-            return redirect(project.get_absolute_url())
+            return redirect(self.get_success_url())
 
         if 'submit_rating' in request.POST:
             rating_form = ProjectRatingForm(request.POST)
@@ -110,7 +108,7 @@ class ProjectDetailView(DetailView):
                 return self.render_to_response(
                     self.get_context_data(rating_form=rating_form)
                 )
-        
+
         elif 'submit_review' in request.POST:
             review_form = ProjectReviewForm(request.POST, request.FILES)
             if review_form.is_valid():
