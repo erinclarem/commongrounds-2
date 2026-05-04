@@ -21,7 +21,9 @@ class Profile(models.Model):
     role = models.CharField(max_length=50, choices=ROLE_CHOICES, blank=True)
 
     def __str__(self):
-        return f"{self.display_name}"
+        if self.display_name:
+            return f"{self.display_name}"
+        return f"{self.user.username}"
 
 
 @receiver(post_save, sender=User)
