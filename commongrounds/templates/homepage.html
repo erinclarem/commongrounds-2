@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Apps</h2>
+<ul>
+
+     <li>
+        <a href="{% url 'merchstore:products_list' %}"> Merchandise Store </a>
+    </li>
+
+    <li>
+        <a href="{% url 'localevents:localevents_list' %}"> Local Events </a>
+    </li>
+
+
+    <li>
+        <a href="{% url 'bookclub:books_list' %}"> Book Club </a>
+    </li>
+
+    <li>
+        <a href="{% url 'diyprojects:project_list' %}"> DIY Projects </a>
+    </li>
+
+    <li>
+        <a href="{% url 'commissions:commission_list' %}"> Commission Requests </a>
+    </li>
+
+</ul>
+
+{% endblock %}

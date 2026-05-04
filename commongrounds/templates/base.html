@@ -6,12 +6,13 @@
 
 <body>
     {% if user.is_authenticated %}
-    <form method="POST" action="{% url 'logout' %}">
+    <a href="{% url 'accounts:profile_update' request.user.username %}">Edit Profile</a>
+    <form method="POST" action="{% url 'accounts:logout' %}">
         {% csrf_token %}
         <button type="submit">Logout</button>
     </form>
     {% else %}
-    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'accounts:login' %}">Login</a>
     {% endif %}
     
     <h1 style="text-align: center;">Common Grounds</h1>
