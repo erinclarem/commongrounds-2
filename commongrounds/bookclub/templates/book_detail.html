@@ -2,11 +2,14 @@
 
 {% block content %}
 <h2>{{ book }}</h2>
-<h3>Bookmarks:</h3>
-<p>{{bookmarks}}</p>
-<form method="post">
+<p>Bookmarks: {{bookmarks}}</p>
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <button type="submit">Bookmark</button>
+    {% if is_bookmarked %}
+        <button type="submit" name="submit_bookmark">Remove Bookmark</button>
+    {% else %}
+        <button type="submit" name="submit_bookmark">Bookmark</button>
+    {% endif %}
 </form>
 <h3>Available for Borrowing:</h3>
 {% if {{book.available_to_borrow}} %}
@@ -40,9 +43,10 @@
 <hr>
 
 <h3>Leave a Review:</h3>
-<form method="post">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    
+    {{ BookReviewForm.as_p }}
+    <button type="submit" name="submit_review">Save Review</button>
 </form>
 <br>
 <h3>All Reviews</h3>
@@ -51,9 +55,8 @@
         {% if review.user_reviewer.exists() %}
             <h3>{{review.user_reviewer}}</h3>
         {% else %}
-            <h3>Anonymous</h3>
+            <h3>{{review.name}}</h3>
         {% endif %}
-        <h4>{{review.user_reviewer}}</h4>
         <h5>{{ review.title }}</h5>
         <p>{{ review.comment }}</p>
     {% empty %}

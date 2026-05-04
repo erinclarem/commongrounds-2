@@ -4,6 +4,8 @@ from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import BookForm, BookReviewForm, BookBorrowForm
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.utils import timezone
 
 
 class BooksListView(ListView):
@@ -47,6 +49,12 @@ class BookDetailView(DetailView):
             bookmarks += 1
         context['bookmarks'] = bookmarks
 
+        context['is_bookmarked'] = False
+        if self.request.user.is_authenticated:
+            profile = self.request.user.profile
+            context['is_bookmarked'] = Bookmark.objects.filter(
+                profile=profile).filter(book=self.get_object()).exists()
+
         context['is_contributor'] = False
         if self.request.user.is_authenticated:
             profile = self.request.user.profile
@@ -56,15 +64,52 @@ class BookDetailView(DetailView):
         context['book_reviews'] = BookReview.objects.filter(
             book=self.get_object())
 
-    form_class = BookReviewForm
+        return context
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        if self.request.user.is_authenticated:
-            form.instance.user_reviewer = self.request.user.profile
-        else:
-            form.instance.anon_reviewer = 'Anonymous'
-        return response
+    def post(self, request, *args, **kwargs):
+        if 'submit_bookmark' in request.POST:
+            bookmark = Bookmark.objects.filter(
+                book=self.get_object(),
+                profile=self.request.user.profile
+            )
+
+            if bookmark.exists():
+                bookmark.delete()
+            else:
+                Bookmark.objects.create(
+                    book=self.get_object(),
+                    profile=self.request.user,
+                    date_bookmarked=timezone.now()
+                )
+            return redirect(self.get_success_url())
+
+        elif 'submit_review' in request.POST:
+            review_form = BookReviewForm(request.POST, request.FILES)
+            if review_form.is_valid():
+                if BookReview.objects.filter(reviewer=self.request.user.profile).filter(book=self.get_object()).exists():
+                    book_review = BookReview.objects.get(
+                        reviewer=self.request.user.profile, book=self.get_object())
+                    book_review.delete()
+                else:
+                    if self.request.user.is_authenticated:
+                        review_form.instance.user_reviewer = self.request.user.profile
+                    else:
+                        review_form.instance.anon_reviewer = 'Anonymous'
+                review = review_form.save(commit=False)
+                review.reviewer = self.request.user.profile
+                review.book = self.get_object()
+                review.save()
+                return redirect(self.get_success_url())
+            else:
+                return self.render_to_response(
+                    self.get_context_data(review_form=review_form)
+                )
+
+        return self.get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy('bookclub:book_detail',
+                            kwargs={'pk': self.kwargs['pk']})
 
 
 class BookCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
@@ -103,6 +148,8 @@ class BookBorrowView(DetailView):
         if form.is_valid():
             if self.request.user.is_authenticated:
                 borrow.borrower = self.request.user.profile
+            borrow.date_to_return = borrow.date_borrowed + \
+                timezone.timedelta(14)
             borrow.save()
             return redirect(self.get_success_url())
         else:
