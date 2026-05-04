@@ -68,10 +68,38 @@ class ProductDetailView(DetailView):
                 transaction.buyer = request.user.profile
                 transaction.product = self.object
                 self.object.stock -= transaction.amount
+                
+                if Transaction.objects.filter(
+                    buyer=request.user.profile,
+                    product=self.object,
+                    status='on cart'
+                    ).exists():
+                    existing_transaction = Transaction.objects.get(
+                        buyer=request.user.profile,
+                        product=self.object,
+                        status='on cart'
+                    )
+                    if existing_transaction.amount + transaction.amount > self.object.stock:
+                        transaction_form.add_error(
+                            'amount', 'Not enough stock available considering existing cart items.'
+                            )
+                        return self.render_to_response(
+                            self.get_context_data(transaction_form=transaction_form)
+                        )
+                    existing_transaction.amount += transaction.amount
+                    existing_transaction.save()
+                else:
+                    on_cart = Transaction(
+                    buyer=request.user.profile,
+                    product=self.object,
+                    amount=transaction.amount,
+                    status='on cart'
+                    )
+                    on_cart.save()
                 if self.object.stock == 0:
                     self.object.status = 'out of stock'
                 transaction.save()
-                return redirect('cart')
+                return redirect('merchstore:cart')
 
         return self.render_to_response(
             self.get_context_data(transaction_form=transaction_form)
