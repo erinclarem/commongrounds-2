@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>{{ project }}</h2>
-<br>
 <h3>Creator: {{ project.creator }}</h3>
 <h3>Favorite Count: {{ favorite_count }}</h3>
 {% if request.user.is_authenticated %} 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% if is_favorited %}
         <button type="submit" name="add_favorite">Unfavorite</button>
@@ -23,7 +22,7 @@
 <br>
 
 {% if request.user.is_authenticated %} 
-<form method="post">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ ProjectRatingForm.as_p }}
     <button type="submit" name="submit_rating">Save Rating</button>
@@ -45,22 +44,24 @@
 <h3>Reviews:</h3>
 <ul>
 {% for review in reviews %}
-    <li>{{ review.user }}
+    <li>
+        User: {{ review.reviewer }}
         <br>
-        {{ review.reviewer }}
-        <br>
-        {{ review.comment }}
+        Comment:
+        <br>{{ review.comment }}
         {% if review.image %}
         <br>
-    <img src="{{ review.image.url }}" alt="Review image">
+        <br>
+    <img src="{{ review.image.url }}" width="15%">
     {% endif %}
 
     </li>
     {% endfor %}
 </ul>
 <br>
-{% if request.user.is_authenticated %} 
-<form method="post">
+{% if request.user.is_authenticated %}
+<h3>Submit a Review:</h3>
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ ProjectReviewForm.as_p }}
     <button type="submit" name="submit_review">Save Review</button>

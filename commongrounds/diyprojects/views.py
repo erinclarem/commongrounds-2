@@ -60,7 +60,7 @@ class ProjectDetailView(DetailView):
         project = self.object
         avg_score = project.ratings.aggregate(avg_score=Avg('score'))
         context['favorite_count'] = project.favorites.count()
-        context['avg_score'] = avg_score
+        context['avg_score'] = str(avg_score['avg_score'] or 0)
         context['reviews'] = project.reviews.all()
 
         if self.request.user.is_authenticated:
@@ -104,7 +104,7 @@ class ProjectDetailView(DetailView):
                 rating = rating_form.save(commit=False)
                 rating.profile = profile
                 rating.project = project
-                rating_form.save()
+                rating.save()
                 return redirect(self.get_success_url())
             else:
                 return self.render_to_response(
@@ -121,7 +121,6 @@ class ProjectDetailView(DetailView):
                 review.reviewer = profile
                 review.project = project
                 review.save()
-                review_form.save()
                 return redirect(self.get_success_url())
             else:
                 return self.render_to_response(
@@ -140,6 +139,7 @@ class ProjectCreateView(RoleRequiredMixin, CreateView):
     required_role = "Project Creator"
     model = Project
     template_name = 'projectadd.html'
+    form_class = ProjectForm
 
     def form_valid(self, form):
         form.instance.creator = self.request.user.profile
@@ -147,7 +147,7 @@ class ProjectCreateView(RoleRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProjectUpdateView(RoleRequiredMixin, DetailView):
+class ProjectUpdateView(RoleRequiredMixin, UpdateView):
     required_role = "Project Creator"
     model = Project
     template_name = 'projectedit.html'
