@@ -29,12 +29,17 @@ class Event(models.Model):
         blank=True
 
     )
-    event_image = models.ImageField(upload_to='event_images/')
+    event_image = models.ImageField(
+        upload_to='event_images/',
+        blank=True,
+        null=True
+    )
     description = models.TextField()
     location = models.CharField(max_length=255)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     event_capacity = models.PositiveIntegerField(
+        default=1,
         validators=[MinValueValidator(1)])
     status = models.CharField(
         max_length=20,
@@ -44,6 +49,7 @@ class Event(models.Model):
             ('done', 'done'),
             ('cancelled', 'cancelled'),
         ],
+        default='available'
     )
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -56,6 +62,13 @@ class Event(models.Model):
             'localevents:localevent_detail',
             args=[self.id]
         )
+
+    def update_status(self):
+        if self.event_signups.count() >= self.event_capacity:
+            self.status = 'full'
+        else:
+            self.status = 'available'
+        self.save()
 
 
 class EventSignup(models.Model):

@@ -3,20 +3,50 @@
 <a href="/localevents/events">Back to Local Events List</a>
 
 <h2>{{ event.title }}</h2>
-<h3>Category: {{ event.category }}</h3>
+
+<h3>Category:</h3>
+<p>{{ event.category }}</p>
+
+<h3>Organizer:</h3>
+<ul>
+    {% for org in event.organizers.all %}
+    <li>{{ org }}</li>
+    {% empty %}
+    <li>No organizers</li>
+    {% endfor %}
+</ul>
+
+<h3>Event Image:</h3>
+{% if event.event_image %}
+<img src="{{ event.event_image.url }}" alt="Event Image" style="max-width:300px;">
+{% else %}
+<p>No image available</p>
+{% endif %}
 
 <h3>Description:</h3>
 <p>{{ event.description }}</p>
 
 <h3>Location:</h3>
 <p>{{ event.location }}</p>
-<h4>Start Time: {{ event.start_time }}</h4>
-<h4>End Time: {{ event.end_time }}</h4>
 
-<p><strong>Created on:</strong> {{ event.created_on }}</p>
-<p><strong>Updated on:</strong> {{ event.updated_on }}</p>
+<h3>Start Time:</h3>
+<p>{{ event.start_time }}</p>
 
-<hr>
+<h3>End Time:</h3>
+<p>{{ event.end_time }}</p>
+
+<h3>Event Capacity:</h3>
+<p>{{ event.event_capacity }}</p>
+
+<h3>Status:</h3>
+<p>{{ event.status }}</p>
+
+<h3>Created On:</h3>
+<p>{{ event.created_on }}</p>
+
+<h3>Updated On:</h3>
+<p>{{ event.updated_on }}</p>
+
 <form method="post">
     {% csrf_token %}
     {% if can_signup %}

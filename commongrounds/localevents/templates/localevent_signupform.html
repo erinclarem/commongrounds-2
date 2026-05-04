@@ -4,12 +4,27 @@
 <a href="/localevents/events">Back to Events List</a>
 
 <h2>Event Signup</h2>
-<h3>{{ form.instance.event.title }}</h3>
+<h3>{{ event.title }}</h3>
+<h3>Category:</h3>
+<p>{{ event.category }}</p>
+<h3>Event Image:</h3>
+{% if event.event_image %}
+<img src="{{ event.event_image.url }}" alt="Event Image" style="max-width:300px;">
+{% else %}
+<p>No image available</p>
+{% endif %}
 
-<p>{{ form.instance.event.description }}</p>
-<p>{{ form.instance.event.location }}</p>
+<h3>Description:</h3>
+<p>{{ event.description }}</p>
 
-<hr>
+<h3>Location:</h3>
+<p>{{ event.location }}</p>
+
+<h3>Start Time:</h3>
+<p>{{ event.start_time }}</p>
+
+<h3>End Time:</h3>
+<p>{{ event.end_time }}</p>
 
 <form method="post">
     {% csrf_token %}

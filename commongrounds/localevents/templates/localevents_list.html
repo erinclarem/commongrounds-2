@@ -1,47 +1,55 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Local Events List</h2>
+{% if messages %}
+{% for message in messages %}
+<p>{{ message }}</p>
+{% endfor %}
+{% endif %}
 
+<h2>Local Events List</h2>
 {% if user.is_authenticated and user.profile.role == "Event Organizer" %}
 <a href="/localevents/event/add">Create Event</a>
 {% endif %}
-<hr>
+
 {% if user.is_authenticated %}
-<h3>Created Events</h3>
+<h3>Your Created Events</h3>
 <ul>
     {% for event in created_events %}
     <li>
         <a href="/localevents/event/{{ event.id }}/">
             {{ event.title }}
         </a>
+        <p>{{ event.description }}</p>
     </li>
     {% empty %}
     <li>No created events</li>
     {% endfor %}
 </ul>
 
-<h3>Signed up Events</h3>
+<h3>Your Signed-up Events</h3>
 <ul>
     {% for event in signed_events %}
     <li>
         <a href="/localevents/event/{{ event.id }}/">
             {{ event.title }}
         </a>
+        <p>{{ event.description }}</p>
     </li>
     {% empty %}
-    <li>No signed up events</li>
+    <li>No signed-up events</li>
     {% endfor %}
 </ul>
 {% endif %}
 
-<h3>Other Events</h3>
+<h3>All Events</h3>
 <ul>
     {% for event in other_events %}
     <li>
         <a href="/localevents/event/{{ event.id }}/">
             {{ event.title }}
         </a>
+        <p>{{ event.description }}</p>
     </li>
     {% empty %}
     <li>No events available</li>

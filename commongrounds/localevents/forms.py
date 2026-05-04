@@ -3,10 +3,12 @@ from .models import Event, EventType, EventSignup
 
 
 class EventForm(forms.ModelForm):
+
     class Meta:
         model = Event
         fields = [
             'title',
+            'category',
             'event_image',
             'description',
             'location',
@@ -15,6 +17,10 @@ class EventForm(forms.ModelForm):
             'event_capacity',
             'status'
         ]
+        widgets = {
+            'start_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'end_time': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
 
 
 class EventSignupForm(forms.ModelForm):

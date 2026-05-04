@@ -1,5 +1,4 @@
 from pyexpat.errors import messages
-
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from accounts.mixins import RoleRequiredMixin
@@ -31,7 +30,6 @@ class LocalEventsListView(ListView):
             )
         else:
             context['other_events'] = Event.objects.all()
-
         return context
 
 
@@ -48,42 +46,42 @@ class LocalEventDetailView(DetailView):
             profile = self.request.user.profile
             is_owner = self.object.organizers.filter(id=profile.id).exists()
 
-        can_signup = not is_full and not is_owner
-
-        context['can_signup'] = can_signup
+        context['can_signup'] = not is_full and not is_owner
         context['is_owner'] = is_owner
         context['is_full'] = is_full
-
         return context
 
     def post(self, request, *args, **kwargs):
-        if self.get_object().event_signups.count() >= self.get_object().event_capacity:
-            return redirect(self.get_object().get_absolute_url())
+        self.object = self.get_object()
 
-        if request.user.is_authenticated:
+        if not request.user.is_authenticated:
+            return redirect('localevents:localevent_signupform', pk=self.object.pk)
 
-            if self.get_object().organizers.filter(id=request.user.profile.id).exists():
-                return redirect(self.get_object().get_absolute_url())
+        if self.object.organizers.filter(id=request.user.profile.id).exists():
+            return redirect(self.object.get_absolute_url())
 
-            EventSignup.objects.create(
-                event=self.get_object(),
-                user_registrant=request.user.profile
-            )
+        if self.object.event_signups.count() >= self.object.event_capacity:
+            self.object.status = 'full'
+            self.object.save()
+            messages.error(request, "Event is full.")
+            return redirect('localevents:localevents_list')
 
-            messages.success(request, "Thank you for signing up!")
-            return redirect(self.get_object().get_absolute_url())
+        EventSignup.objects.create(
+            event=self.object,
+            user_registrant=request.user.profile
+        )
+        self.object.update_status()
+        messages.success(request, "Signup successful!")
+        return redirect('localevents:localevents_list')
 
-        return redirect('localevents:localevent_signupform', pk=self.get_object().pk)
 
-
-class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
+class LocalEventAddView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     model = Event
     template_name = "localevent_form.html"
     form_class = EventForm
     required_role = "Event Organizer"
 
     def form_valid(self, form):
-        form.instance.category = EventType.objects.first()
         response = super().form_valid(form)
         self.object.organizers.add(self.request.user.profile)
         return response
@@ -92,7 +90,7 @@ class LocalEventAddView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
         return reverse('localevents:localevent_detail', kwargs={'pk': self.object.pk})
 
 
-class LocalEventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
+class LocalEventUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
     model = Event
     template_name = "localevent_form.html"
     form_class = EventForm
@@ -100,11 +98,6 @@ class LocalEventUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-
-        if self.object.event_signups.count() >= self.object.event_capacity:
-            self.object.status = 'full'
-        else:
-            self.object.status = 'available'
 
         self.object.save()
         return response
@@ -117,6 +110,9 @@ class LocalEventSignupForm(CreateView):
     model = EventSignup
     template_name = "localevent_signupform.html"
     form_class = EventSignupForm
+
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
