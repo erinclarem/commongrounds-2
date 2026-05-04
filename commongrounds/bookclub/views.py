@@ -1,8 +1,9 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from .models import Book, Bookmark, BookReview
+from .models import Book, Bookmark, BookReview, Borrow
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import BookForm, BookReviewForm
+from .forms import BookForm, BookReviewForm, BookBorrowForm
+from django.shortcuts import redirect
 
 
 class BooksListView(ListView):
@@ -74,7 +75,7 @@ class BookCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        self.object.contributor = self.request.user.profile
+        self.get_object().contributor = self.request.user.profile
         return response
 
 
@@ -86,5 +87,25 @@ class BookUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        self.object.save()
+        self.get_object().save()
         return response
+
+
+class BookBorrowView(DetailView):
+    model = Borrow
+    template_name = "book_borrow.html"
+    form_class = BookBorrowForm
+
+    def post(self, request, *args, **kwargs):
+        borrowed_book = self.get_object().book
+        form = BookBorrowForm(request.POST)
+        borrow = form.save(commit=False)
+        if form.is_valid():
+            if self.request.user.is_authenticated:
+                borrow.borrower = self.request.user.profile
+            borrow.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(
+                self.get_context_data(form=form)
+            )

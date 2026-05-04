@@ -100,4 +100,4 @@ class Borrow (models.Model):
     )
     name = models.CharField(max_length=100)
     date_borrowed = models.DateField()
-    date_to_return = models.DateField()
+    date_to_return = date_borrowed + datetime.timedelta(14)

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ book }}</h2>
+<br>
+<h3>Genre:</h3>
+<p>{{book.genre}}</p>
+<h3>Author:</h3>
+<p>{{book.author}}</p>
+<h3>Publication Year:</h3>
+<p>{{book.publication_year}}</p>
+<br>
+<hr>
+<h3>Borrow Form:</h3>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if user.is_authenticated %}
+        {{ form.name.as_hidden }}
+    {% endif %}
+    <button type="submit" name="submit">Borrow This Book</button>
+</form>
