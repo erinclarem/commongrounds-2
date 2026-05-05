@@ -76,7 +76,6 @@ class Job(models.Model):
     )
  
     class Meta:
-        # Open before Full, then manpower_required descending, then role ascending
         ordering = ['status', '-manpower_required', 'role']
  
     def __str__(self):
@@ -117,7 +116,6 @@ class JobApplication(models.Model):
     applied_on = models.DateTimeField(auto_now_add=True)
  
     class Meta:
-        # Pending first, then Accepted, then Rejected, then Applied On descending
         ordering = [
             models.Case(
                 models.When(status='Pending', then=0),
