@@ -1,8 +1,8 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block content %}
-<h2>Commission Requests</h2>
+{% block page_title %}Commission Requests{% endblock %}
 
+<<<<<<< Updated upstream
 <ul>
     {% for commission in commission_list %}
         <li>
@@ -10,6 +10,52 @@
                 {{ commission }}
             </a>
         </li>
+=======
+{% block main %}
+<h1>Commission Requests</h1>
+<a href="{% url 'commissions:create' %}">Post a Commission</a>
+
+{% if request.user.is_authenticated %}
+
+  {% if my_commissions %}
+  <h2>My Commissions</h2>
+  <ul>
+    {% for commission in my_commissions %}
+    <li>
+      <a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a>
+      — {{ commission.status }}
+    </li>
+>>>>>>> Stashed changes
     {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if applied_commissions %}
+  <h2>Commissions I Applied To</h2>
+  <ul>
+    {% for commission in applied_commissions %}
+    <li>
+      <a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a>
+      — {{ commission.status }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+{% endif %}
+
+<h2>All Commissions</h2>
+{% if all_commissions %}
+<ul>
+  {% for commission in all_commissions %}
+  <li>
+    <a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a>
+    — {{ commission.status }}
+  </li>
+  {% endfor %}
 </ul>
+{% else %}
+<p>No commissions found.</p>
+{% endif %}
+
 {% endblock %}

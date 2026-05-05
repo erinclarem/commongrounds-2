@@ -1,10 +1,69 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
+<<<<<<< Updated upstream
 {% block content %}
 <h2>{{ commission }}</h2>
+=======
+{% block page_title %}{{ commission.title }}{% endblock %}
+>>>>>>> Stashed changes
 
-<p><strong>Description:</strong> {{ commission.description }}</p>
+{% block main %}
+<h1>{{ commission.title }}</h1>
+<p><strong>Status:</strong> {{ commission.status }}</p>
+<p><strong>Type:</strong> {{ commission.type }}</p>
+<p><strong>Maker:</strong> {{ commission.maker }}</p>
 <p><strong>People Required:</strong> {{ commission.people_required }}</p>
+<<<<<<< Updated upstream
 <p><strong>Created On:</strong> {{ commission.created_on }}</p>
 <p><strong>Updated On:</strong> {{ commission.updated_on }}</p>
+=======
+<p><strong>Description:</strong> {{ commission.description }}</p>
+<p><strong>Posted On:</strong> {{ commission.created_on }}</p>
+
+{% if request.user.is_authenticated and commission.maker == request.user.profile %}
+  <a href="{% url 'commissions:update' commission.pk %}">Edit Commission</a>
+{% endif %}
+
+<hr>
+
+<h2>Jobs</h2>
+<p><strong>Total Manpower Required:</strong> {{ total_manpower }}</p>
+<p><strong>Open Manpower:</strong> {{ open_manpower }}</p>
+
+{% for job in jobs %}
+<div>
+  <h3>{{ job.role }}</h3>
+  <p><strong>Manpower Required:</strong> {{ job.manpower_required }}</p>
+  <p><strong>Status:</strong> {{ job.status }}</p>
+
+  {% if request.user.is_authenticated %}
+    {% if commission.maker != request.user.profile %}
+      <form method="POST" action="{% url 'commissions:detail' commission.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="job_id" value="{{ job.pk }}">
+        <button type="submit" {% if job.is_full %}disabled{% endif %}>
+          Apply to Job
+        </button>
+      </form>
+    {% endif %}
+  {% endif %}
+
+  <h4>Applications</h4>
+  {% if job.applications.all %}
+  <ul>
+    {% for application in job.applications.all %}
+    <li>{{ application.applicant }} — {{ application.status }} ({{ application.applied_on }})</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No applications yet.</p>
+  {% endif %}
+</div>
+<hr>
+{% empty %}
+<p>No jobs listed for this commission.</p>
+{% endfor %}
+
+<a href="{% url 'commissions:list' %}">Back to Commissions</a>
+>>>>>>> Stashed changes
 {% endblock %}
