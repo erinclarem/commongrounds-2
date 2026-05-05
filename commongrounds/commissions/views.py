@@ -1,17 +1,3 @@
-<<<<<<< Updated upstream
-from django.views.generic import ListView, DetailView
-from .models import Commission
-
-
-class CommissionListView(ListView):
-    model = Commission
-    template_name = 'commission_list.html'
-
-
-class CommissionDetailView(DetailView):
-    model = Commission
-    template_name = 'commission_detail.html'
-=======
 from .models import Commission, Job, JobApplication
 from accounts.mixins import RoleRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -67,7 +53,7 @@ class CommissionDetailView(DetailView):
  
         total_manpower = sum(job.manpower_required for job in jobs)
         accepted_total = sum(
-            job.applications.filter(status=JobApplication.'Open').count()
+            job.applications.filter(status=JobApplication.STATUS_ACCEPTED).count()
             for job in jobs
         )
  
@@ -140,4 +126,33 @@ class CommissionUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = 'commissions/commission_form.html'
     required_role = 'Commission Maker'
     form_class = CommissionForm
->>>>>>> Stashed changes
+ 
+    def get_queryset(self):
+        return Commission.objects.filter(maker=self.request.user.profile)
+ 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if 'formset' not in context:
+            context['formset'] = JobFormSet(instance=self.object)
+        context['action'] = 'Update'
+        return context
+ 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = CommissionForm(request.POST, instance=self.object)
+        formset = JobFormSet(request.POST, instance=self.object)
+ 
+        if form.is_valid() and formset.is_valid():
+            commission = form.save()
+            formset.save()
+ 
+            all_jobs = commission.jobs.all()
+            if all_jobs.exists() and all(job.status == Job.STATUS_FULL for job in all_jobs):
+                commission.status = Commission.STATUS_FULL
+                commission.save()
+ 
+            return redirect(commission.get_absolute_url())
+ 
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset)
+        )
