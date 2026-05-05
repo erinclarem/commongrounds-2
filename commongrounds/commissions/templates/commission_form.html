@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block page_title %}{{ action }} Commission{% endblock %}
+
+{% block main %}
+<h1>{{ action }} Commission</h1>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+
+  <h2>Jobs</h2>
+  {{ formset.management_form }}
+  {% for job_form in formset %}
+  <div>
+    <h3>Job {{ forloop.counter }}</h3>
+    {{ job_form.as_p }}
+    {% if formset.can_delete %}
+      {{ job_form.DELETE }}
+      <label for="{{ job_form.DELETE.id_for_label }}">Delete this job</label>
+    {% endif %}
+  </div>
+  <hr>
+  {% endfor %}
+
+  <button type="submit">{{ action }}</button>
+</form>
+
+<a href="{% url 'commissions:list' %}">Cancel</a>
+{% endblock %}
