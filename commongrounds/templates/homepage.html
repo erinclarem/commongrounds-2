@@ -1,29 +1,85 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 <h2>Apps</h2>
-<ul>
 
-     <li>
-        <a href="{% url 'merchstore:products_list' %}"> Merchandise Store </a>
-    </li>
+<div class="cards">
+<figure>
+    <img src="{% static 'images/merchandisestore.jpg' %}">
+    <figcaption>
+        <h3>Merchandise Store</h3>
+        <p>Insert Cool Description here
+        </p>
+        {% if user.is_authenticated %}
+        <p><b>List of Products Sold:
+        </b></p>
+        {% endif %}
+        <p> <a href="{% url 'merchstore:products_list' %}">See all Products!</a> </p>
+    </figcaption>
+</figure>
 
-    <li>
-        <a href="{% url 'localevents:localevents_list' %}"> Local Events </a>
-    </li>
+<figure>
+    <img src="{% static 'images/localevents.jpg' %}">
+    <figcaption>
+        <h3>Local Events</h3>
+        <p>Insert Cool Description here
+        </p>
+        {% if user.is_authenticated %}
+        <p><b>List of events organized:
+        </b></p>
+        {% endif %}
+        <p> <a href="{% url 'localevents:localevents_list' %}">See all Events!</a> </p>
+    </figcaption>
+</figure>
 
+<figure>
+    <img src="{% static 'images/bookclub.jpg' %}">
+    <figcaption>
+        <h3>Book Club</h3>
+        <p>Insert Cool Description here
+        </p>
+        {% if user.is_authenticated %}
+        <p><b>List of events organized:
+        </b></p>
+        {% endif %}
+        <p> <a href="{% url 'bookclub:books_list' %}">See all Books!</a> </p>
+    </figcaption>
+</figure>
 
-    <li>
-        <a href="{% url 'bookclub:books_list' %}"> Book Club </a>
-    </li>
+<figure>
+    <img src="{% static 'images/diyprojects.jpg' %}">
+    <figcaption>
+        <h3>DIY Projects</h3>
+        <p>Insert Cool Description here
+        </p>
+        {% if user.is_authenticated %}
+        <b><p>List of projects created:
+        </p></b>
+            <ul>
+    {% for project in user.profile.projects.all %}
+        <li><a href="{{ project.get_absolute_url }}">{{ project }}</a></li>
+        {% endfor %}
+    </ul>
+        {% endif %}
+        <p> <a href="{% url 'diyprojects:project_list' %}">See all Projects!</a> </p>
+    </figcaption>
+</figure>
 
-    <li>
-        <a href="{% url 'diyprojects:project_list' %}"> DIY Projects </a>
-    </li>
+<figure>
+    <img src="{% static 'images/commissions.jpg' %}">
+    <figcaption>
+        <h3>Commission Requests</h3>
+        <p>Insert Cool Description here
+        </p>
+        {% if user.is_authenticated %}
+        <p><b>List of commissions created:
+        </b></p>
+        {% endif %}
+        <p> <a href="{% url 'commissions:commission_list' %}">See all Commissions!</a> </p>
+    </figcaption>
+</figure>
 
-    <li>
-        <a href="{% url 'commissions:commission_list' %}"> Commission Requests </a>
-    </li>
+</div>
 
-</ul>
 
 {% endblock %}

@@ -1,21 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>Common Grounds</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <header>
+    <nav>
+        <ul>
+            <li><a href="{% url 'homepage' %}">Home</a></li>
+            <li><a href="{% url 'merchstore:products_list' %}">Merch Store</a></li>
+            <li><a href="{% url 'localevents:localevents_list' %}">Local Events</a></li>
+            <li><a href="{% url 'bookclub:books_list' %}">Book Club</a></li>
+            <li><a href="{% url 'diyprojects:project_list' %}">DIY Projects</a></li>
+            <li><a href="{% url 'commissions:commission_list' %}">Commission Requests</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class = "user">
+        <nav>
+    <ul>
+    {% if user.is_authenticated and  user.profile.display_name %}
+    <li>Welcome, {{ user.profile.display_name }}!</li>
+    {% elif user.is_authenticated %}
+    <li>Welcome, {{ user.username }}!</li>
+    {% else %}
+    <li>Welcome, Guest!</li>
+    {% endif %}
     {% if user.is_authenticated %}
-    <a href="{% url 'accounts:profile_update' request.user.username %}">Edit Profile</a>
-    <form method="POST" action="{% url 'accounts:logout' %}">
+    <li><div><a href="{% url 'accounts:profile_update' request.user.username %}">Edit Profile</a></div>
+    <div><form method="POST" action="{% url 'accounts:logout' %}">
         {% csrf_token %}
         <button type="submit">Logout</button>
-    </form>
+    </form></div>
     {% else %}
-    <a href="{% url 'accounts:login' %}">Login</a>
+    <div><a href="{% url 'accounts:login' %}">Login</a></div></li>
     {% endif %}
-    
-    <h1 style="text-align: center;">Common Grounds</h1>
+    </ul>
+</nav>
+</div>
+<div class = "banner">
+    <h1>Common Grounds</h1>
+    </div>
     {% block content %}
     {% endblock %}
 </body>

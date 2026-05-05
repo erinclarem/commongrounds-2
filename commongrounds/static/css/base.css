@@ -1,0 +1,214 @@
+
+body {
+    margin:0;
+    padding:0;
+    font-family: "Fredoka", sans-serif;
+    background-color: #FFF2F7;
+}
+
+header {
+    width:100%;
+    display:flex;
+    background-color:#cc4668;
+}
+
+header nav{
+    width:100%;
+    padding:1%;
+
+}
+
+header nav ul {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin:0;
+    padding:0;
+
+
+
+}
+header nav ul li {
+    list-style: none;
+    display: block;
+
+}
+
+header nav ul li a {
+    text-decoration: none;
+    color:white;
+    font-size: 1.1em;
+    
+}
+
+header nav ul li a:hover {
+    text-decoration: none;
+    color:#ffe700;
+}
+
+header nav ul li a:active {
+    font-weight: bold;
+
+}
+
+
+.user {
+    width:100%;
+    display:flex;
+    background-color: #ffe700;
+
+}
+
+.user nav{
+    width:100%;
+    padding:0.5%;
+}
+.user nav ul {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    margin:0;
+    padding:0;
+
+
+}
+.user nav ul li {
+    list-style: none;
+    display: block;
+    font-size: 1.1em;
+
+
+}
+
+.user nav ul li a {
+    text-decoration: none;
+
+}
+
+.user nav ul li a:hover {
+    text-decoration: none;
+
+}
+
+.user nav ul li a:active {
+    font-weight: bold;
+    text-decoration: none;
+
+}
+
+.user nav ul li div {
+    display: inline-block;
+}
+
+.user nav ul li div a {
+    text-decoration: none;
+
+}
+
+.user nav ul li div a:hover {
+    text-decoration: none;
+
+}
+
+.user nav ul li div a:active {
+    font-weight: bold;
+    text-decoration: none;
+
+}
+
+.banner {
+    width:100%;
+    min-height: 60vh;
+    background-image:url("../images/Banner_bg.gif");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.banner h1 {
+    color:#ffe700;
+    font-size: 6em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+
+}
+
+
+.cards {
+    display: grid;
+    grid-template-columns:repeat(auto-fit, 313.333333333px);
+    grid-template-rows: auto;
+    gap:10px;
+    justify-content: center;
+    margin:10px 0;
+    align-items:stretch;
+}
+
+.cards figure{
+    width: 100%;
+    height: auto;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    background-color: #ffb6c1;
+    border-radius: 5%;
+    overflow: hidden;
+}
+
+.cards figure:hover{
+    box-sizing: border-box;
+    border:1px solid red;
+}
+
+.cards figure img{
+    width:100%;
+    max-height: 50vh;
+    min-height: 50vh;
+    object-fit: cover;
+}
+
+.cards figure figcaption{
+    margin:2%;
+    text-align: justify;
+}
+
+@media screen and (min-width: 1280px) {
+.cards{
+    grid-template-columns:repeat(4, 313.333333333px);
+    gap:2px;
+}
+
+}
+
+h2 {
+    text-align: center;
+    font-size: 4em;
+}
+
+form button {
+ background-color: #FFF2F7;
+ border: none;
+ padding: 0.1 rem;
+ font-family: "Fredoka", sans-serif;
+ font-size: 1rem;
+ width: auto;
+ border-radius: 1rem;
+ color: #2e41d2;
+ box-shadow: 0 0.2rem #f0d8e1;
+ cursor: pointer;
+}
+
+form button:active {
+ color: white;
+ box-shadow: 0 0.2rem #f0d8e1;
+ transform: translateY(0.2rem);
+}
+
+form button:hover:not(:disabled) {
+ background: #2e41d2;
+ color: white;
+ text-shadow: 0 0.1rem #182690;
+}
